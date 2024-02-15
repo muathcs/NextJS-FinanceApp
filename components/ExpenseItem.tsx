@@ -4,10 +4,10 @@ import { currencyFormatter } from "@/lib/utils";
 type ExpenseItemProp = {
   color: string;
   title: string;
-  amount: number;
+  total: number;
 };
 
-function ExpenseItem({ color, title, amount }: ExpenseItemProp) {
+function ExpenseItem({ color, title, total }: ExpenseItemProp) {
   return (
     <button>
       <div className="flex items-center justify-between px-4 py-4 bg-slate-700 rounded-3xl">
@@ -18,7 +18,7 @@ function ExpenseItem({ color, title, amount }: ExpenseItemProp) {
           />
           <h4 className=" capitalize">{title}</h4>
         </div>
-        <p>{currencyFormatter(amount)}</p>
+        <p>{currencyFormatter(total)}</p>
       </div>
     </button>
   );
