@@ -13,6 +13,7 @@ import {
   getDocs,
   doc,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 type FinanceContextProviderProps = {
@@ -24,6 +25,8 @@ type financeContextType = {
   expenses: any;
   addIncomeItem: (item: any) => Promise<void>;
   removeIncomeItem: (index: any) => Promise<void>;
+  addExpenseItem: (index: any, index2: any) => Promise<void>;
+  addCategory: (index: any) => Promise<void>;
 };
 
 export const financeContext = createContext<financeContextType>({
@@ -31,6 +34,8 @@ export const financeContext = createContext<financeContextType>({
   expenses: [],
   addIncomeItem: async () => {},
   removeIncomeItem: async () => {},
+  addExpenseItem: async () => {},
+  addCategory: async () => {},
 });
 
 export default function FinanceContextProvider({
@@ -38,6 +43,30 @@ export default function FinanceContextProvider({
 }: FinanceContextProviderProps) {
   const [income, setIncome] = useState<any>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
+
+  async function addCategory(category: any) {
+    try {
+      const collectionRef = collection(db, "expenses");
+
+      const docSnap = await addDoc(collectionRef, {
+        ...category,
+        item: [],
+      });
+
+      setExpenses((prevExpense) => {
+        return [
+          ...prevExpense,
+          {
+            id: docSnap.id,
+            item: [],
+            ...category,
+          },
+        ];
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   async function addIncomeItem(newIncome: any) {
     try {
@@ -65,7 +94,36 @@ export default function FinanceContextProvider({
     }
   }
 
-  const values = { income, addIncomeItem, removeIncomeItem, expenses };
+  async function addExpenseItem(expenseCategoryId: string, newExpense: any) {
+    const docRef = doc(db, "expenses", expenseCategoryId);
+
+    try {
+      await updateDoc(docRef, { ...newExpense });
+
+      setExpenses((prevState) => {
+        const updateExpense = [...prevState];
+
+        const foundIndex = updateExpense.findIndex((expense: any) => {
+          return expense.id === expenseCategoryId;
+        });
+
+        updateExpense[foundIndex] = { id: expenseCategoryId, ...expenses };
+
+        return updateExpense;
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const values = {
+    income,
+    addIncomeItem,
+    removeIncomeItem,
+    expenses,
+    addExpenseItem,
+    addCategory,
+  };
 
   useEffect(() => {
     const getIncomeData = async () => {
