@@ -55,7 +55,6 @@ function AddIncomeModal({ showAddIncomeModal, setShowAddIncomeModal }: any) {
     }
   }
 
-  console.log("setmodal: ", setShowAddIncomeModal);
   return (
     <Modal show={showAddIncomeModal} onclose={setShowAddIncomeModal}>
       <form onSubmit={addIncomeHandler} className="input-group">

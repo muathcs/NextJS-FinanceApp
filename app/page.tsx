@@ -22,12 +22,9 @@ export default function Home() {
       return total + item.amount;
     }, 0);
 
-    console.log("income", totalIncome);
-
     const totalExpense = expenses.reduce((total: number, item: any) => {
       return total + item.total;
     }, 0);
-    console.log("income", totalExpense);
 
     const newBalance = totalIncome - totalExpense;
 
@@ -59,7 +56,6 @@ export default function Home() {
           <button
             className="btn btn-primary"
             onClick={(e) => {
-              console.log("button");
               setShowAddExpenseModal(true);
             }}
           >
@@ -78,14 +74,10 @@ export default function Home() {
         <section className="py-6">
           <h3 className="text-2xl">My Expenses</h3>
           <div className="input-group mt-6">
-            {expenses.map((item: any) => (
-              <ExpenseItem
-                key={item.id}
-                color={item.color}
-                title={item.title}
-                total={item.total}
-              />
-            ))}
+            {expenses.length > 0 &&
+              expenses.map((item: any) => (
+                <ExpenseItem key={item.id} expense={item} />
+              ))}
           </div>
         </section>
 

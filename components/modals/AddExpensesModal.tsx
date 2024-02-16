@@ -11,8 +11,8 @@ function AddExpensesModal({
   const [expenseAmount, setExpenseAmount] = useState<any>();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showAddExpense, setShowAddExpense] = useState(false);
-  const titleRef = useRef<HTMLInputElement>();
-  const colorRef = useRef<HTMLInputElement>();
+  const titleRef = useRef<HTMLInputElement>(null);
+  const colorRef = useRef<HTMLInputElement>(null);
 
   const { expenses, addExpenseItem, addCategory } = useContext(financeContext);
 
@@ -21,11 +21,13 @@ function AddExpensesModal({
       return item.id === selectedCategory;
     });
 
+    console.log("expenses: ", expense);
+
     const newExpense = {
       color: expense.color,
       title: expense.title,
       total: expense.total + parseInt(expenseAmount),
-      item: [
+      items: [
         ...expense.items,
         {
           amount: parseInt(expenseAmount),
@@ -43,8 +45,6 @@ function AddExpensesModal({
     } catch (error) {
       console.error(error);
     }
-
-    console.log("new: ", newExpense);
   }
 
   async function addCategoryHandler() {
