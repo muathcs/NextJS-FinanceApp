@@ -14,7 +14,10 @@ import {
   doc,
   deleteDoc,
   updateDoc,
+  query,
+  where,
 } from "firebase/firestore";
+import { authContext } from "./AuthContext";
 
 type FinanceContextProviderProps = {
   children: ReactNode;
@@ -48,11 +51,13 @@ export default function FinanceContextProvider({
   const [income, setIncome] = useState<any>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
 
+  const { user } = useContext(authContext);
   async function addCategory(category: any) {
     try {
       const collectionRef = collection(db, "expenses");
 
       const docSnap = await addDoc(collectionRef, {
+        uid: user.uid,
         ...category,
         items: [],
       });
@@ -62,6 +67,7 @@ export default function FinanceContextProvider({
           ...prevExpense,
           {
             id: docSnap.id,
+            uid: user.uid,
             items: [],
             ...category,
           },
@@ -173,9 +179,13 @@ export default function FinanceContextProvider({
   };
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
     const getIncomeData = async () => {
       const collectionRef = collection(db, "Income");
-      const docsSnap = await getDocs(collectionRef);
+      const q = query(collectionRef, where("uid", "==", user.uid));
+      const docsSnap = await getDocs(q);
 
       const data = docsSnap.docs.map((doc) => {
         return {
@@ -190,7 +200,9 @@ export default function FinanceContextProvider({
 
     const getExpenses = async () => {
       const collectionRef = collection(db, "expenses");
-      const docsSnap = await getDocs(collectionRef);
+      const q = query(collectionRef, where("uid", "==", user.uid));
+
+      const docsSnap = await getDocs(q);
 
       const data = docsSnap.docs.map((doc) => {
         return {
@@ -205,7 +217,7 @@ export default function FinanceContextProvider({
     // call functions
     getIncomeData();
     getExpenses();
-  }, []);
+  }, [user]);
 
   return (
     <financeContext.Provider value={values}>{children}</financeContext.Provider>

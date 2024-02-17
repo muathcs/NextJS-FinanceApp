@@ -7,6 +7,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import AddIncomeModal from "@/components/modals/AddIncomeModal";
 import { financeContext } from "@/lib/store/finance-context";
 import AddExpensesModal from "@/components/modals/AddExpensesModal";
+import { authContext } from "@/lib/store/AuthContext";
+import SignIn from "@/components/SignIn";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function Home() {
@@ -16,6 +18,7 @@ export default function Home() {
   const [balance, setBalance] = useState<number>(0);
 
   const { expenses, income } = useContext(financeContext);
+  const { user, loading } = useContext(authContext);
 
   useEffect(() => {
     const totalIncome = income.reduce((total: number, item: any) => {
@@ -30,6 +33,10 @@ export default function Home() {
 
     setBalance(newBalance);
   }, [expenses, income]);
+
+  if (!user) {
+    return <SignIn />;
+  }
 
   return (
     <>
@@ -82,7 +89,9 @@ export default function Home() {
         </section>
 
         <section className="py-6">
-          <h3 className="text-2xl">Stats</h3>
+          <h3 className="text-2xl" id="stats">
+            Stats
+          </h3>
           <div className="w-1/2  mx-auto">
             <Doughnut
               data={{

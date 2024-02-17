@@ -16,10 +16,12 @@ import {
   doc,
   deleteDoc,
 } from "firebase/firestore";
+import { authContext } from "@/lib/store/AuthContext";
 interface Income {
   amount: number;
   description: string;
   createdAt: Date;
+  uid: string;
 }
 
 function AddIncomeModal({ showAddIncomeModal, setShowAddIncomeModal }: any) {
@@ -28,6 +30,8 @@ function AddIncomeModal({ showAddIncomeModal, setShowAddIncomeModal }: any) {
   const { income, addIncomeItem, removeIncomeItem } =
     useContext(financeContext);
 
+  const { user } = useContext(authContext);
+
   async function addIncomeHandler(e: any) {
     e.preventDefault();
 
@@ -35,6 +39,7 @@ function AddIncomeModal({ showAddIncomeModal, setShowAddIncomeModal }: any) {
       amount: parseInt(amountRef.current!.value),
       description: descriptionRef.current!.value,
       createdAt: new Date(),
+      uid: user.uid,
     };
 
     try {
